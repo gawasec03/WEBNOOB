@@ -4,8 +4,11 @@ Made by ChatGPT The provided code can be described as a scanning tool for detect
 # How to Usage :
 
 1. pip install requests
-2. python webnoob.py "example.com" (for single domain)
-3. python scan.py "example.com" -s <subdomains-file> (for subdomain)
+2. pip install argparse
+3. pip install socket
+4. pip install whois
+5. python webnoob.py "example.com" (for single domain)
+6. python scan.py "example.com" -s <subdomains-file> (for subdomain)
 
 # Help :
 
