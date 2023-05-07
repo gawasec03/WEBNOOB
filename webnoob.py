@@ -1,12 +1,11 @@
 import os
 import requests
-import wafw00f
-import wappalyzer
 import argparse
+import socket
 
 def main():
     if os.name == 'nt':
-        os.system('clear')  # Use 'clear' command instead of 'cls' in Kali Linux
+        os.system('clear')  # Gunakan perintah 'clear' jika menjalankan di Kali Linux
     banner = """\u001b[36m
        
 ░██╗░░░░░░░██╗███████╗██████╗░███╗░░██╗░█████╗░░█████╗░██████╗░
@@ -26,12 +25,6 @@ parser.add_argument("domain", help="The domain to scan")
 parser.add_argument("-s", "--subdomains", help="A file containing a list of subdomains")
 args = parser.parse_args()
 
-# Set up wafw00f scanner
-wafw00f_scanner = wafw00f.WafW00F()
-
-# Set up wappalyzer scanner
-wappalyzer_scanner = wappalyzer.Wappalyzer()
-
 # Create a list of URLs to scan
 urls = [args.domain]
 if args.subdomains:
@@ -39,17 +32,33 @@ if args.subdomains:
         subdomains = f.read().splitlines()
     urls += [f"{subdomain}.{args.domain}" for subdomain in subdomains]
 
+# Print number of subdomains
+num_subdomains = len(urls) - 1
+print(f"Number of subdomains processed: {num_subdomains}")
+
 # Loop through URLs and perform scans
 for url in urls:
     # Send a request to the URL to get the headers
     response = requests.head(f"https://{url}")
 
-    # Detect WAF using wafw00f
-    wafw00f_result = wafw00f_scanner.identify_waf(response.headers)
-    if wafw00f_result:
-        print(f"WAF detected on {url}: {wafw00f_result}")
+    # Detect WAF
+    if "Server" in response.headers and "WAF" in response.headers["Server"]:
+        print(f"WAF detected on {url}: {response.headers['Server']}")
 
-    # Detect CMS using wappalyzer
+    # Detect CMS
+    if "X-Powered-By" in response.headers:
+        print(f"CMS detected on {url}: {response.headers['X-Powered-By']}")
+    elif "Server" in response.headers:
+        print(f"CMS detected on {url}: {response.headers['Server']}")
+    else:
+        print(f"No CMS detected on {url}")
+
+    # Get IP address
     try:
-        apps = wappalyzer_scanner.analyze_with_versions(response.headers, f"https://{url}")
-        cms = [app["name"] for app in apps if "CMS" in app["categories"]]
+        ip = socket.gethostbyname(url)
+        print(f"IP address of {url}: {ip}")
+    except socket.gaierror:
+        print(f"Unable to resolve IP address for {url}")
+
+if __name__ == "__main__":
+    main()
