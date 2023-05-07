@@ -53,6 +53,3 @@ for url in urls:
     try:
         apps = wappalyzer_scanner.analyze_with_versions(response.headers, f"https://{url}")
         cms = [app["name"] for app in apps if "CMS" in app["categories"]]
-        if cms:
-            print(f"CMS detected on {url}: {', '.join(cms)}")
-    except wapp
