@@ -4,5 +4,5 @@ Made by ChatGPT The provided code can be described as a scanning tool for detect
 # How to Usage :
 
 1. pip install requests
-2. python webnoob.py <domain> (for single domain)
-3. python scan.py <domain> -s <subdomains-file> (for subdomain)
+2. python webnoob.py "example.com" (for single domain)
+3. python scan.py "example.com" -s <subdomains-file> (for subdomain)
